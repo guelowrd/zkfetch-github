@@ -16,13 +16,11 @@ app.get('/', (_: Request, res: Response) => {
 app.get('/generateProof', async (_: Request, res: Response) => {
     try{
         // URL to fetch the data from 
-        const url = "https://api.github.com/repos/ZK-Hack/zkhack-4/commits";
+        const url = process.env.GH_PRIVATE_URL!;
         const publicOptions = {
           method: 'GET', 
-          owner: 'ZK-Hack',
-          repo: 'zkhack-4',
           headers: {
-            accept: 'application/vnd.github+json, application/json, text/plain, */*',
+            accept: 'application/vnd.github+json',
             'X-GitHub-Api-Version': '2022-11-28'
           }
         };
