@@ -15,29 +15,26 @@ app.get('/', (_: Request, res: Response) => {
 
 app.get('/generateProof', async (_: Request, res: Response) => {
     try{
-        // URL to fetch the data from - in this case, the price of Ethereum in USD from the CoinGecko API
-        const url = 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd';
+        // URL to fetch the data from 
+        const url = "https://api.github.com/repos/ZK-Hack/zkhack-4/commits";
+        const publicOptions = {
+          method: 'GET', 
+          owner: 'ZK-Hack',
+          repo: 'zkhack-4',
+          headers: {
+            accept: 'application/vnd.github+json, application/json, text/plain, */*',
+            'X-GitHub-Api-Version': '2022-11-28'
+          }
+        };
+        const privateOptions = {
+          headers: {
+              Authorization: "Bearer " + process.env.GH_API_KEY!
+          }
+        };
         /* 
         * Fetch the data from the API and generate a proof for the response. 
-        * The proof will contain the USD price of Ethereum. 
         */ 
-        const proof = await reclaimClient.zkFetch(url, {
-          // public options for the fetch request 
-          method: 'GET',
-        }, {
-          // options for the proof generation
-          responseMatches: [
-            /* 
-            * The proof will match the response body with the regex pattern (search for the price of ethereum in the response body 
-            the regex will capture the price in the named group 'price').
-            * to extract the price of Ethereum in USD. (e.g. {"ethereum":{"usd":3000}}) 
-            */ 
-            {
-                "type": "regex",
-                "value": "\\{\"ethereum\":\\{\"usd\":(?<price>[\\d\\.]+)\\}\\}"
-            }
-          ],
-        });
+        const proof = await reclaimClient.zkFetch(url, publicOptions, privateOptions);
       
         if(!proof) {
           return res.status(400).send('Failed to generate proof');
